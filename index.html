@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بتوتة شن بتقرا اليوم؟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --bg: #FFEFF6;
+    --bg2: #F3E8FF;
+    --card: #FFFFFF;
+    --ink: #5A2A5C;
+    --ink-soft: #8D5C8F;
+    --pink: #FF7EB6;
+    --pink-deep: #E8559A;
+    --lilac: #D9C8FF;
+    --mint: #C3F0DC;
+    --butter: #FFE9A8;
+    --face: #FFD9E6;
+    --cheek: #FF9DBF;
+    --shadow: #E7B9D4;
+    --font: "Baloo Bhaijaan 2", "Segoe UI", Tahoma, "Noto Sans Arabic", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #2B1A35; --bg2: #1F1428; --card: #3A2548; --ink: #FFE3F0; --ink-soft: #D9B3D2;
+      --pink: #FF8FC0; --pink-deep: #FF6FAF; --lilac: #6E54A8; --mint: #3C7A63; --butter: #8A6D2A;
+      --face: #FFC9DD; --cheek: #FF8FB4; --shadow: #150D1C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #2B1A35; --bg2: #1F1428; --card: #3A2548; --ink: #FFE3F0; --ink-soft: #D9B3D2;
+    --pink: #FF8FC0; --pink-deep: #FF6FAF; --lilac: #6E54A8; --mint: #3C7A63; --butter: #8A6D2A;
+    --face: #FFC9DD; --cheek: #FF8FB4; --shadow: #150D1C;
+  }
+
+  * { box-sizing: border-box; }
+  html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; height: 100%; min-height: 100%;
+    font-family: var(--font); color: var(--ink);
+    background: linear-gradient(160deg, var(--bg), var(--bg2));
+    overflow-x: hidden;
+    transition: background .6s ease;
+  }
+  body[data-mood="happy"] { --bg: #E9FBF2; --bg2: #F3E8FF; }
+  body[data-mood="angry"] { --bg: #FFE2E2; --bg2: #FFD1D9; --face: #FFC2C2; --cheek: #FF7A7A; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) body[data-mood="happy"] { --bg: #1B3030; --bg2: #2B1A35; }
+    :root:not([data-theme="light"]) body[data-mood="angry"] { --bg: #4A1E26; --bg2: #2B1A35; }
+  }
+
+  /* خلفية الايموجي العايمة */
+  .floaties { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .floaties span {
+    position: absolute; font-size: 28px; opacity: .55;
+    animation: bob 7s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-16px) rotate(6deg); } }
+
+  .app {
+    position: relative; z-index: 1; min-height: 100%;
+    display: grid; place-items: center; padding: 20px;
+  }
+  .screen {
+    width: min(100%, 460px); text-align: center;
+    display: none; flex-direction: column; align-items: center; gap: 18px;
+  }
+  .screen.active { display: flex; animation: pop-in .55s cubic-bezier(.2,1.4,.4,1) both; }
+  .screen.leaving { display: flex; animation: pop-out .22s ease-in both; }
+  @keyframes pop-in { from { opacity: 0; transform: translateY(24px) scale(.88); } to { opacity: 1; transform: none; } }
+  @keyframes pop-out { to { opacity: 0; transform: translateY(-14px) scale(.94); } }
+
+  /* بتوتة الشخصية */
+  .mascot { width: 168px; height: 168px; filter: drop-shadow(0 10px 0 var(--shadow)); transition: transform .3s; }
+  .mascot.wiggle { animation: wiggle 2.6s ease-in-out infinite; }
+  @keyframes wiggle { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) translateY(-4px); } }
+  .mascot .face { fill: var(--face); stroke: var(--ink); stroke-width: 5; transition: fill .5s; }
+  .mascot .line { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+  .mascot .ink { fill: var(--ink); }
+  .mascot .shine { fill: #fff; }
+  .mascot .cheek { fill: var(--cheek); opacity: .85; transition: fill .5s; }
+  .mascot .bow { fill: var(--pink); stroke: var(--ink); stroke-width: 5; }
+  .mascot .mood { display: none; }
+  .mascot[data-mood="neutral"] .m-neutral,
+  .mascot[data-mood="happy"] .m-happy,
+  .mascot[data-mood="angry"] .m-angry { display: inline; }
+  .mascot .m-happy .tongue { fill: #FF8FA8; }
+
+  h1, h2 { margin: 0; line-height: 1.25; }
+  .title { font-size: clamp(32px, 9vw, 46px); font-weight: 800; color: var(--ink); }
+  .sub { margin: 0; color: var(--ink-soft); font-size: 18px; font-weight: 500; }
+
+  .card {
+    width: 100%; background: var(--card); border-radius: 28px; padding: 18px;
+    border: 3px solid var(--ink); box-shadow: 0 8px 0 var(--shadow);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .field { display: flex; flex-direction: column; gap: 6px; text-align: right; }
+  .field label { font-weight: 700; font-size: 17px; }
+  .field input {
+    font: inherit; font-size: 22px; font-weight: 700; text-align: center;
+    padding: 12px 14px; border-radius: 18px; color: var(--ink);
+    border: 3px dashed var(--lilac); background: color-mix(in srgb, var(--lilac) 18%, transparent);
+    outline: none; transition: border-color .2s, box-shadow .2s, transform .2s;
+    width: 100%;
+  }
+  .field input::placeholder { color: var(--ink-soft); opacity: .6; font-weight: 500; }
+  .field input:focus-visible { border-style: solid; border-color: var(--pink-deep); box-shadow: 0 0 0 5px color-mix(in srgb, var(--pink) 35%, transparent); }
+  .field.shake { animation: shake .45s; }
+  @keyframes shake { 20%,60% { transform: translateX(-8px); } 40%,80% { transform: translateX(8px); } }
+  .hint { min-height: 22px; margin: 0; font-size: 15px; color: var(--pink-deep); font-weight: 700; }
+
+  .btn {
+    font: inherit; font-size: 20px; font-weight: 800; cursor: pointer;
+    padding: 12px 22px; border-radius: 999px; border: 3px solid var(--ink);
+    color: var(--ink); width: 100%;
+    box-shadow: 0 6px 0 var(--ink); transition: transform .12s, box-shadow .12s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 var(--ink); }
+  .btn:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--ink); }
+  .btn:focus-visible { outline: 4px solid var(--pink-deep); outline-offset: 3px; }
+  .btn-primary { background: var(--pink); }
+  .btn-lazy { background: var(--butter); }
+  .btn-back { background: var(--card); width: auto; font-size: 18px; padding: 10px 24px; }
+
+  .or { display: flex; align-items: center; gap: 10px; width: 100%; color: var(--ink-soft); font-weight: 700; }
+  .or::before, .or::after { content: ""; flex: 1; border-top: 3px dotted var(--lilac); }
+
+  /* شاشة النتيجة */
+  .big {
+    font-size: clamp(34px, 10vw, 56px); font-weight: 800; line-height: 1.35;
+    text-wrap: balance; overflow-wrap: anywhere;
+  }
+  .chip {
+    display: inline-block; padding: 0 .4em; margin: 0 .1em; border-radius: 22px;
+    background: var(--mint); border: 3px solid var(--ink); box-shadow: 0 5px 0 var(--ink);
+    transform: rotate(-2deg);
+  }
+  .big-angry { color: #C62F3E; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .big-angry { color: #FF8F9B; } }
+  .emoji-row { font-size: 38px; letter-spacing: 6px; }
+  .angry-emoji { font-size: 76px; line-height: 1; display: inline-block; animation: rage 0.9s ease-in-out infinite; }
+  @keyframes rage { 0%,100% { transform: scale(1) rotate(0); } 25% { transform: scale(1.12) rotate(-6deg); } 75% { transform: scale(1.12) rotate(6deg); } }
+  .screen.angry.active { animation: pop-in .45s cubic-bezier(.2,1.4,.4,1) both, jolt .5s .3s; }
+  @keyframes jolt { 20%,60% { transform: translateX(-10px); } 40%,80% { transform: translateX(10px); } }
+
+  .burst { position: fixed; pointer-events: none; z-index: 5; font-size: 30px; }
+
+  .theme-toggle {
+    position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px); left: 12px; z-index: 3;
+    font: inherit; font-size: 22px; width: 46px; height: 46px; border-radius: 50%;
+    border: 3px solid var(--ink); background: var(--card); cursor: pointer; box-shadow: 0 4px 0 var(--ink);
+  }
+  .theme-toggle:focus-visible { outline: 4px solid var(--pink-deep); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body data-mood="neutral">
+
+<div class="floaties" aria-hidden="true">
+  <span style="top:8%;right:10%">📚</span>
+  <span style="top:18%;left:8%;animation-delay:-2s">🎀</span>
+  <span style="top:46%;right:5%;animation-delay:-4s">✏️</span>
+  <span style="top:62%;left:6%;animation-delay:-1s">⭐</span>
+  <span style="bottom:12%;right:14%;animation-delay:-3s">🍓</span>
+  <span style="bottom:8%;left:18%;animation-delay:-5s">☁️</span>
+</div>
+
+<button class="theme-toggle" id="themeBtn" type="button" aria-label="تبديل الوضع الليلي">🌙</button>
+
+<main class="app">
+
+  <!-- الشاشة الأولى -->
+  <section class="screen active" id="home" aria-live="polite">
+    <svg class="mascot wiggle" data-mood="neutral" viewBox="0 0 200 200" aria-hidden="true">
+      <ellipse class="bow" cx="68" cy="30" rx="26" ry="16" transform="rotate(-18 68 30)"/>
+      <ellipse class="bow" cx="132" cy="30" rx="26" ry="16" transform="rotate(18 132 30)"/>
+      <circle class="bow" cx="100" cy="36" r="11"/>
+      <circle class="face" cx="100" cy="110" r="78"/>
+      <ellipse class="cheek" cx="48" cy="128" rx="14" ry="9"/>
+      <ellipse class="cheek" cx="152" cy="128" rx="14" ry="9"/>
+      <g class="mood m-neutral">
+        <circle class="ink" cx="70" cy="104" r="10"/><circle class="ink" cx="130" cy="104" r="10"/>
+        <circle class="shine" cx="74" cy="100" r="3.5"/><circle class="shine" cx="134" cy="100" r="3.5"/>
+        <path class="line" d="M88 134 Q100 144 112 134"/>
+      </g>
+      <g class="mood m-happy">
+        <path class="line" d="M58 108 Q70 92 82 108"/><path class="line" d="M118 108 Q130 92 142 108"/>
+        <path class="ink" d="M78 130 Q100 164 122 130 Z"/>
+        <path class="tongue" d="M92 146 Q100 156 108 146 Q100 142 92 146Z"/>
+      </g>
+      <g class="mood m-angry">
+        <path class="line" d="M54 84 L86 98"/><path class="line" d="M146 84 L114 98"/>
+        <circle class="ink" cx="72" cy="112" r="8"/><circle class="ink" cx="128" cy="112" r="8"/>
+        <path class="line" d="M84 148 Q100 132 116 148"/>
+      </g>
+    </svg>
+
+    <h1 class="title">بتوتة شن بتقرا اليوم؟ 📖</h1>
+    <p class="sub">اكتبي رمز المادة وخلّينا نشوفوا 🎀</p>
+
+    <div class="card">
+      <div class="field" id="field">
+        <label for="subject">رمز المادة</label>
+        <input id="subject" type="text" dir="auto" maxlength="40" autocomplete="off" placeholder="مثال: EE416" enterkeyhint="done">
+      </div>
+      <p class="hint" id="hint" role="status"></p>
+      <button class="btn btn-primary" id="confirm" type="button">تأكيد ✨</button>
+    </div>
+
+    <div class="or" aria-hidden="true">أو</div>
+
+    <button class="btn btn-lazy" id="lazy" type="button">مش قارية اليوم 😴</button>
+  </section>
+
+  <!-- شاشة القراية -->
+  <section class="screen" id="happy" aria-live="polite">
+    <svg class="mascot wiggle" data-mood="happy" viewBox="0 0 200 200" aria-hidden="true">
+      <ellipse class="bow" cx="68" cy="30" rx="26" ry="16" transform="rotate(-18 68 30)"/>
+      <ellipse class="bow" cx="132" cy="30" rx="26" ry="16" transform="rotate(18 132 30)"/>
+      <circle class="bow" cx="100" cy="36" r="11"/>
+      <circle class="face" cx="100" cy="110" r="78"/>
+      <ellipse class="cheek" cx="48" cy="128" rx="14" ry="9"/>
+      <ellipse class="cheek" cx="152" cy="128" rx="14" ry="9"/>
+      <g class="mood m-happy">
+        <path class="line" d="M58 108 Q70 92 82 108"/><path class="line" d="M118 108 Q130 92 142 108"/>
+        <path class="ink" d="M78 130 Q100 164 122 130 Z"/>
+        <path class="tongue" d="M92 146 Q100 156 108 146 Q100 142 92 146Z"/>
+      </g>
+    </svg>
+    <h2 class="big" id="happyText"></h2>
+    <div class="emoji-row" aria-hidden="true">🎉📚💖</div>
+    <button class="btn btn-back back" type="button">رجّعني 🔙</button>
+  </section>
+
+  <!-- شاشة الغضب -->
+  <section class="screen angry" id="angry" aria-live="polite">
+    <svg class="mascot" data-mood="angry" viewBox="0 0 200 200" aria-hidden="true">
+      <ellipse class="bow" cx="68" cy="30" rx="26" ry="16" transform="rotate(-18 68 30)"/>
+      <ellipse class="bow" cx="132" cy="30" rx="26" ry="16" transform="rotate(18 132 30)"/>
+      <circle class="bow" cx="100" cy="36" r="11"/>
+      <circle class="face" cx="100" cy="110" r="78"/>
+      <ellipse class="cheek" cx="48" cy="128" rx="14" ry="9"/>
+      <ellipse class="cheek" cx="152" cy="128" rx="14" ry="9"/>
+      <g class="mood m-angry">
+        <path class="line" d="M54 84 L86 98"/><path class="line" d="M146 84 L114 98"/>
+        <circle class="ink" cx="72" cy="112" r="8"/><circle class="ink" cx="128" cy="112" r="8"/>
+        <path class="line" d="M84 148 Q100 132 116 148"/>
+      </g>
+    </svg>
+    <h2 class="big big-angry">مصح وجهك كيف بنصفوا موادنا نوضي اقرييي <span class="angry-emoji" role="img" aria-label="غاضب">😡</span></h2>
+    <button class="btn btn-back back" type="button">خلاص بنقرا 🥺</button>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  var body = document.body;
+  var input = document.getElementById('subject');
+  var hint = document.getElementById('hint');
+  var field = document.getElementById('field');
+  var screens = { home: document.getElementById('home'), happy: document.getElementById('happy'), angry: document.getElementById('angry') };
+  var moods = { home: 'neutral', happy: 'happy', angry: 'angry' };
+  var current = 'home';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function go(name) {
+    if (name === current) return;
+    var from = screens[current], to = screens[name];
+    from.classList.remove('active'); from.classList.add('leaving');
+    setTimeout(function () {
+      from.classList.remove('leaving');
+      to.classList.add('active');
+      body.setAttribute('data-mood', moods[name]);
+      current = name;
+      if (name === 'happy') confetti(['🎉','💖','⭐','🌸','📚','✨']);
+      if (name === 'angry') confetti(['💢','😤','🔥'], true);
+      var focusTarget = to.querySelector('button') || to;
+      if (name === 'home') input.focus({ preventScroll: true }); else focusTarget.focus({ preventScroll: true });
+    }, reduce ? 0 : 220);
+  }
+
+  function confetti(list, rise) {
+    if (reduce || !document.body.animate) return;
+    for (var i = 0; i < 22; i++) {
+      var s = document.createElement('span');
+      s.className = 'burst';
+      s.textContent = list[i % list.length];
+      var x = Math.random() * window.innerWidth;
+      var startY = rise ? window.innerHeight + 20 : -30;
+      var endY = rise ? -60 : window.innerHeight + 30;
+      s.style.left = x + 'px'; s.style.top = '0px';
+      document.body.appendChild(s);
+      var drift = (Math.random() - .5) * 140;
+      var a = s.animate([
+        { transform: 'translate(0,' + startY + 'px) rotate(0deg)', opacity: 1 },
+        { transform: 'translate(' + drift + 'px,' + endY + 'px) rotate(' + (Math.random() * 540 - 270) + 'deg)', opacity: .9 }
+      ], { duration: 1600 + Math.random() * 1400, delay: Math.random() * 500, easing: 'cubic-bezier(.3,.6,.4,1)', fill: 'both' });
+      a.onfinish = (function (el) { return function () { el.remove(); }; })(s);
+    }
+  }
+
+  function confirm() {
+    var v = input.value.trim();
+    if (!v) {
+      hint.textContent = 'اكتبي رمز المادة أول 🥺';
+      field.classList.remove('shake'); void field.offsetWidth; field.classList.add('shake');
+      input.focus();
+      return;
+    }
+    hint.textContent = '';
+    var big = document.getElementById('happyText');
+    big.textContent = '';
+    big.appendChild(document.createTextNode('بتووووتة بتجلد '));
+    var chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.textContent = v;           // textContent يمنع أي حقن HTML
+    big.appendChild(chip);
+    big.appendChild(document.createTextNode(' تقدرييييها 💪'));
+    go('happy');
+  }
+
+  document.getElementById('confirm').addEventListener('click', confirm);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') confirm(); });
+  input.addEventListener('input', function () { hint.textContent = ''; });
+  document.getElementById('lazy').addEventListener('click', function () { go('angry'); });
+  Array.prototype.forEach.call(document.querySelectorAll('.back'), function (b) {
+    b.addEventListener('click', function () { input.value = ''; go('home'); });
+  });
+
+  // الوضع الليلي
+  var root = document.documentElement, btn = document.getElementById('themeBtn');
+  var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  function applyTheme() { root.setAttribute('data-theme', dark ? 'dark' : 'light'); btn.textContent = dark ? '☀️' : '🌙'; }
+  applyTheme();
+  btn.addEventListener('click', function () { dark = !dark; applyTheme(); });
+})();
+</script>
+</body>
+</html>
