@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -341,7 +341,7 @@
 
   // الوضع الليلي
   var root = document.documentElement, btn = document.getElementById('themeBtn');
-  var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var dark = false; // النهاري هو الافتراضي
   function applyTheme() { root.setAttribute('data-theme', dark ? 'dark' : 'light'); btn.textContent = dark ? '☀️' : '🌙'; }
   applyTheme();
   btn.addEventListener('click', function () { dark = !dark; applyTheme(); });
